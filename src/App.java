@@ -1,9 +1,9 @@
+import java.io.InputStream;
 import java.net.URI;
+import java.net.URL;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.net.http.HttpRequest.Builder;
-import java.net.http.HttpResponse.BodyHandler;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +35,16 @@ public class App {
         
         // Exibir e manipular os dados
         for (Map<String,String> filme : listaDeFilmes) {
-            System.out.println("\u001b[37m \u001b[44m Titulo: \u001b[m: "+filme.get("title"));
+            String urlImagem = filme.get("image");
+            String tituloFilme = filme.get("title");
+
+            InputStream inputStream = new URL(urlImagem).openStream();
+            String nomeArquivo = tituloFilme + ".png";
+
+            var geradora = new GeradoraDeFigurinhas();
+            geradora.cria(inputStream, nomeArquivo);
+
+            System.out.println("\u001b[37m \u001b[44m Titulo: \u001b[m: "+ tituloFilme);
             System.out.println("\u001b[37m \u001b[44m Imagem: \u001b[m: " + filme.get("image"));
             System.out.println("\u001b[37m \u001b[44m Avaliação: \u001b[m:"+filme.get("imDbRating"));
             String imDbRating = filme.get("imDbRating");
