@@ -1,57 +1,39 @@
 import java.io.InputStream;
-import java.net.URI;
 import java.net.URL;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.net.http.HttpResponse.BodyHandlers;
 import java.util.List;
-import java.util.Map;
+
 
 public class App {
     public static void main(String[] args) throws Exception {
         
-        // Realizar a conexão HTTP e buscar o top 250 filmes
+        // fazer uma conexão HTTP e buscar os top 250 filmes
+        //String url = "https://imdb-api.com/en/API/Top250Movies/k_0ojt0yvm";
+        String url = "https://raw.githubusercontent.com/alura-cursos/imersao-java-2-api/main/NASA-APOD.json";
 
-        String url = "https://raw.githubusercontent.com/alura-cursos/imersao-java-2-api/main/TopMovies.json";
-        URI endereco = URI.create(url);
-        var client = HttpClient.newHttpClient();
-        var request = HttpRequest.newBuilder(endereco).GET().build();
-        HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
-        String body = response.body();
+        var http = new ClienteHttp();
+        String json = http.buscaDados(url);
 
-        // exibindo o conteudo do body
-        //System.out.println(body);
         
-        // Filtrar somente os dados que interessam (Titulo, poster, classificação)
-        var parser = new JsonParser();
-        List<Map<String, String>> listaDeFilmes = parser.parse(body);
-        
-        //mostra o tamanho da lista
-        //System.out.println(listaDeFilmes.size());
-        
-        //mostra algum item especifico da lista que eu selecionar
-        //System.out.println(listaDeFilmes.get(0));
-        
-        // Exibir e manipular os dados
-        for (Map<String,String> filme : listaDeFilmes) {
-            String urlImagem = filme.get("image");
-            String tituloFilme = filme.get("title");
 
-            InputStream inputStream = new URL(urlImagem).openStream();
-            String nomeArquivo = tituloFilme + ".png";
+        //exibir e manipular os dados
+        ExtratorDeConteudoDaNasa extrator = new ExtratorDeConteudoDaNasa();
+        List<conteudo> conteudos = extrator.extraiConteudos(json);
 
-            var geradora = new GeradoraDeFigurinhas();
+        var geradora = new GeradoraDeFigurinhas();
+
+        for (int i = 1; i < 3; i++) {
+            
+            conteudo conteudo = conteudos.get(i);
+
+            InputStream inputStream = new URL(conteudo.getUrlImagem()).openStream();
+            String nomeArquivo = "saida/" + conteudo.getTitulo() + ".png";
+
             geradora.cria(inputStream, nomeArquivo);
 
-            System.out.println("\u001b[37m \u001b[44m Titulo: \u001b[m: "+ tituloFilme);
-            System.out.println("\u001b[37m \u001b[44m Imagem: \u001b[m: " + filme.get("image"));
-            System.out.println("\u001b[37m \u001b[44m Avaliação: \u001b[m:"+filme.get("imDbRating"));
-            String imDbRating = filme.get("imDbRating");
-            for(int i = 0; i < Double.parseDouble(imDbRating); i++){
-                System.out.print("⭐ ");
-            }
+            System.out.println(conteudo.getTitulo());
             System.out.println();
         }
+        
+        
     }
 }
