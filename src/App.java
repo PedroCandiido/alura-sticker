@@ -7,16 +7,18 @@ public class App {
     public static void main(String[] args) throws Exception {
         
         // fazer uma conexão HTTP e buscar os top 250 filmes
-        //String url = "https://imdb-api.com/en/API/Top250Movies/k_0ojt0yvm";
-        String url = "https://raw.githubusercontent.com/alura-cursos/imersao-java-2-api/main/NASA-APOD.json";
+        //String url = "https://raw.githubusercontent.com/alura-cursos/imersao-java-2-api/main/TopMovies.json";
+        //ExtratorDeConteudo extrator = new ExtratorDeConteudoDoIMDB();
 
+        String url = "https://raw.githubusercontent.com/alura-cursos/imersao-java-2-api/main/NASA-APOD.json";
+        ExtratorDeConteudo extrator = new ExtratorDeConteudoDaNasa();
+        
         var http = new ClienteHttp();
         String json = http.buscaDados(url);
 
         
 
         //exibir e manipular os dados
-        ExtratorDeConteudoDaNasa extrator = new ExtratorDeConteudoDaNasa();
         List<conteudo> conteudos = extrator.extraiConteudos(json);
 
         var geradora = new GeradoraDeFigurinhas();
